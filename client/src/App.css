@@ -1,0 +1,94 @@
+
+  .app {
+    /* margin-left:500px;
+    margin-top: 50px; */
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    min-height: 100vh;
+  }
+  
+
+.app-header {
+  background-color: #282c34;
+  padding: 20px;
+  color: white;
+}
+
+.app-main {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.home {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  max-width: 1200px;
+  padding: 20px;
+}
+
+.role-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-top: 2rem;
+  flex-wrap: wrap;
+}
+
+.role-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  min-width: 200px;
+  height: 200px;
+  text-decoration: none;
+  color: #282c34;
+  background-color: #f0f0f0;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+  font-size: 1.2rem;
+  font-weight: bold;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.role-button:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  background-color: #e0e0e0;
+}
+
+.role-button .icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  color: #61dafb;
+}
+
+/* Responsive text sizing */
+@media (max-width: 768px) {
+  h1 {
+    font-size: 1.5rem;
+  }
+  
+  h2 {
+    font-size: 1.3rem;
+  }
+  
+  .role-button {
+    min-width: 150px;
+    height: 150px;
+    font-size: 1rem;
+  }
+  
+  .role-button .icon {
+    font-size: 2rem;
+  }
+}
