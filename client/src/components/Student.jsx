@@ -1,20 +1,20 @@
 
 // client/src/components/Student.jsx
 import React, { useState, useEffect, useRef } from 'react';
-import socketService from '../services/socketService.jsx'; // Adjust path if needed
-import './Student.css'; // Ensure this CSS file has the updated styles
+import socketService from '../services/socketService.jsx'; 
+import './Student.css'; 
 
 function Student() {
   const [studentName, setStudentName] = useState('');
   const [isRegistered, setIsRegistered] = useState(false);
   const [currentPoll, setCurrentPoll] = useState(null);
-  const [selectedOption, setSelectedOption] = useState(''); // Holds the currently selected radio value
-  const [hasAnswered, setHasAnswered] = useState(false); // Tracks if student answered (submitted or timed out)
-  const [pollResults, setPollResults] = useState({}); // Holds results received from server
-  const [timeLeft, setTimeLeft] = useState(null); // Countdown timer
-  const [isWaitingForResults, setIsWaitingForResults] = useState(false); // Loading indicator for results
-  const socketRef = useRef(null); // Persistent socket instance
-  const answerSubmittedRef = useRef(false); // Tracks if server confirmed answer receipt for *current* poll
+  const [selectedOption, setSelectedOption] = useState(''); 
+  const [hasAnswered, setHasAnswered] = useState(false); 
+  const [pollResults, setPollResults] = useState({});
+  const [timeLeft, setTimeLeft] = useState(null); 
+  const [isWaitingForResults, setIsWaitingForResults] = useState(false); 
+  const socketRef = useRef(null); 
+  const answerSubmittedRef = useRef(false);
 
   // --- Effect for Socket Connection and Event Listeners ---
   useEffect(() => {
@@ -32,28 +32,27 @@ function Student() {
     socket.on('new_poll', (pollData) => {
       console.log('Received new poll:', pollData);
       setCurrentPoll(pollData);
-      setSelectedOption(''); // Reset selection for new poll
-      setHasAnswered(false);  // Reset answered status
-      setTimeLeft(pollData.duration || 60); // Use duration from poll or default 60s
-      setPollResults({});     // Clear old results
-      setIsWaitingForResults(false); // Not waiting initially
-      answerSubmittedRef.current = false; // Reset submission confirmation flag
+      setSelectedOption(''); 
+      setHasAnswered(false); 
+      setTimeLeft(pollData.duration || 60); 
+      setPollResults({});    
+      setIsWaitingForResults(false); 
+      answerSubmittedRef.current = false; 
     });
 
     socket.on('poll_results', (results) => {
       console.log('Received poll results:', results);
       setPollResults(results || {});
-      setIsWaitingForResults(false); // Results received
+      setIsWaitingForResults(false); 
     });
 
     socket.on('answer_received', (data) => {
-      // Ensure confirmation is for the current poll
+      
       if (data.success && currentPoll && data.pollId === currentPoll.id) {
         console.log(`Server confirmed answer received: ${data.answer} for poll ID: ${data.pollId}`);
-        answerSubmittedRef.current = true; // Mark as successfully submitted
-        // Now request results (server might also push results, but requesting ensures we get them)
+        answerSubmittedRef.current = true; 
         console.log("Requesting results after answer confirmation...");
-        if (!isWaitingForResults) { // Avoid duplicate requests if timer also triggered
+        if (!isWaitingForResults) { 
           socket.emit('get_results');
           setIsWaitingForResults(true);
         }
@@ -64,7 +63,7 @@ function Student() {
     socket.on('answer_error', (message) => {
       console.error('Answer Error:', message);
       alert(`Error submitting answer: ${message}`);
-      // Potentially reset state to allow re-submission if applicable
+     
       setHasAnswered(false);
       setIsWaitingForResults(false);
       answerSubmittedRef.current = false;
@@ -72,7 +71,7 @@ function Student() {
     socket.on('poll_error', (error) => {
       console.error('Poll Error:', error.message);
       alert(`Poll Error: ${error.message}`);
-      setCurrentPoll(null); // Clear broken poll
+      setCurrentPoll(null); 
     });
     socket.on('results_error', (error) => {
       console.error('Results Error:', error.message);
@@ -90,12 +89,11 @@ function Student() {
         socket.off('poll_error');
         socket.off('results_error');
       }
-      // Optional: Disconnect if appropriate
-      // socketService.disconnect();
+     
     };
-  }, [currentPoll]); // Re-run if currentPoll changes (e.g., to attach correct pollId logic)
+  }, [currentPoll]); 
 
-  // --- Effect for Countdown Timer ---
+
   useEffect(() => {
     let timerId = null;
     const socket = socketRef.current;
@@ -106,8 +104,7 @@ function Student() {
           if (prevTime <= 1) {
             clearInterval(timerId);
             console.log("Timer ended.");
-            setHasAnswered(true); // Mark as answered due to timeout
-             // Request results only if an answer hasn't already been confirmed as submitted
+            setHasAnswered(true); 
              if (socket && !answerSubmittedRef.current && !isWaitingForResults) {
                 console.log("Requesting results due to timeout...");
                 socket.emit('get_results');
@@ -125,10 +122,7 @@ function Student() {
         clearInterval(timerId);
       }
     };
-  // Depend on `hasAnswered` to stop the timer once an answer is submitted or time runs out.
-  // Depend on `timeLeft` to react to its changes.
-  // Depend on `currentPoll` to start timer for a new poll.
-  // Depend on `isWaitingForResults` to avoid duplicate result requests on timeout.
+
   }, [currentPoll, hasAnswered, timeLeft, isWaitingForResults]);
 
   // --- Handler for Student Registration ---
@@ -173,15 +167,14 @@ function Student() {
 
     console.log(`Submitting answer: ${selectedOption} for poll ID: ${currentPoll.id}`);
     socket.emit('submit_answer', { pollId: currentPoll.id, answer: selectedOption });
-    setHasAnswered(true); // Mark as answered immediately
-    setIsWaitingForResults(true); // Show waiting indicator
-    // We do NOT clear selectedOption here - keep it to display "Your answer" later
-    // We rely on `answer_received` event for confirmation via `answerSubmittedRef.current`
+    setHasAnswered(true);
+    setIsWaitingForResults(true);
+  
   };
 
   // --- Calculate Percentages for Results Display ---
   const calculatePercentages = () => {
-    // Ensure pollResults is treated as an object
+    
     const results = pollResults || {};
     const totalVotes = Object.values(results).reduce((sum, count) => sum + (Number(count) || 0), 0);
 
@@ -234,8 +227,7 @@ function Student() {
   // Main View (Registered Student)
   return (
     <div className="student-container">
-      {/* Optional: Simple welcome */}
-      {/* <h2 style={{ textAlign: 'center', marginBottom: '1rem', color: '#555' }}>Welcome, {studentName}!</h2> */}
+     
 
       {!currentPoll ? (
         <div className="waiting-poll">
@@ -273,9 +265,9 @@ function Student() {
                     {currentPoll.options.map((option, index) => (
                       <div
                         key={index}
-                        // Apply 'selected' class based on state
+                        
                         className={`option-item ${selectedOption === option ? 'selected' : ''}`}
-                        // Click handler for the entire item
+                       
                         onClick={() => setSelectedOption(option)}
                       >
                         {/* Hidden actual radio input */}
@@ -300,7 +292,7 @@ function Student() {
                 <button
                   type="submit"
                   className="submit-btn"
-                  // Disable button if no option is chosen
+                 
                   disabled={!selectedOption}
                 >
                   Submit
@@ -308,7 +300,7 @@ function Student() {
               </form>
             </>
           ) : (
-            // --- Results/Waiting View (shown if answered or time ran out) ---
+          
             <div className="results-section">
               <h3>Poll Results</h3>
               {isWaitingForResults ? (
@@ -327,7 +319,7 @@ function Student() {
                             </div>
                             <div className="progress-bar">
                               <div
-                                // Apply 'selected' class to the bar fill if this was the student's choice
+                               
                                 className={`progress-fill ${selectedOption === option ? 'selected' : ''}`}
                                 style={{ width: `${percentages[option] || 0}%` }}
                               ></div>
@@ -343,7 +335,7 @@ function Student() {
                       )}
                     </>
                   ) : (
-                     // Message if results are requested but empty (e.g., no one voted)
+                     
                      <p style={{ textAlign: 'center', color: '#777', padding: '2rem 0' }}>
                          Results are not yet available or no votes were cast.
                      </p>
