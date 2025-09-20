@@ -238,7 +238,7 @@ function Student() {
         <div className="poll-section">
           {/* --- Poll Header --- */}
           <div className="poll-header">
-            <span className="question-number">Question {currentPoll.id || ''}</span>
+            <span className="question-number">Question </span>
             {/* Show timer only when voting is active */}
             {!hasAnswered && timeLeft > 0 && (
               <span className="timer">
