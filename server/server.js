@@ -52,7 +52,7 @@ io.on('connection', (socket) => {
 
     socket.on("Get-students",()=>{
         console.log(studentNames)
-        io.emit("Recieved_student_list",{studentNames})
+        io.emit("Recieved_student_list",{studentnames})
     })
     // Teacher requests previous polls
     socket.on('get_previous_polls', () => {
@@ -61,7 +61,8 @@ io.on('connection', (socket) => {
 
     // Teacher can (optionally) end a poll - you'd need UI for this
     socket.on('end_poll', (pollId) => {
-        if (polls[pollId]) {
+    setTimeout(() => {
+         if (polls[pollId]) {
             const endedPoll = polls[pollId];
             previousPollsData.unshift({ poll: endedPoll, results: calculateResults(endedPoll.votes, endedPoll.options) });
             delete polls[pollId];
@@ -69,6 +70,7 @@ io.on('connection', (socket) => {
             io.emit('new_poll', null); 
             console.log(`Poll ended: ${pollId}`);
         }
+    }, (newPoll.duration || 60) * 1000 );    
     });
 
     // --- Student Actions ---

@@ -140,7 +140,7 @@ function Teacher() {
             question: trimmedQuestion, 
             options: validOptions,
             correctAnswers: correctAnswers,
-            timer: timer
+            duration: timer
         };
         
         console.log('Attempting to create poll with data:', pollData);
@@ -158,7 +158,6 @@ function Teacher() {
     );
 
     function getStudentList() {
-        socketRef.current = socketService.connect();
         const socket = socketRef.current;
         socket.emit("Get-students");
     }
@@ -188,7 +187,7 @@ function Teacher() {
                 <div className="question-section">
                     <label htmlFor="pollQuestion">Enter your question</label>
                     <input
-                        type="paragraph"
+                        type="text"
                         id="pollQuestion"
                         className="question-input"
                         value={question}
@@ -198,14 +197,14 @@ function Teacher() {
                     />
                     <div className="character-counter">{questionCharCount}/{maxQuestionLength}</div>
                     
-                    {/* <div className="timer-dropdown">
+                    <div className="timer-dropdown">
                         <select value={timer} onChange={(e) => setTimer(e.target.value)}>
-                            <option value="30 seconds">30 seconds</option>
-                            <option value="60 seconds">60 seconds</option>
-                            <option value="90 seconds">90 seconds</option>
-                            <option value="120 seconds">120 seconds</option>
+                            <option value={30}>30 seconds</option>
+                            <option value={60}>60 seconds</option>
+                            <option value={90}>90 seconds</option>
+                            <option value={120}>120 seconds</option>
                         </select>
-                    </div> */}
+                    </div>
                 </div>
 
                 <div className="options-section">
@@ -278,10 +277,10 @@ function Teacher() {
                             </div>
                         ))}
                     </div>
-                    {/* <div className='student-list'>
+                    <div className='student-list'>
                         <button onClick={getStudentList}>Get Student-List</button>
                         {students && <NameList initialNames={students}/>}
-                    </div> */}
+                    </div>
                 </div>
             )}
 
